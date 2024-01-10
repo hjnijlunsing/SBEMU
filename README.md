@@ -21,7 +21,7 @@ To do:
 [DONE] Line  409: 	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
 [DONE] Line  925: 	case DEVICE_ALI:
 [SKIP] Line 1598: 	case DEVICE_ALI:  /* No Special code for the NForce PCM table seems to be in sc_ich.h; guess nothing is needed for Ali */
-Line 2144: 		case DEVICE_ALI:
+[SKIP] Line 2144: 		case DEVICE_ALI: /* No Special code for the NForce SPDIF seems to be in sc_ich.h; guess nothing is needed for Ali */
 Line 2161: 	if (chip->device_type != DEVICE_ALI) {
 Line 2203: 	if (chip->device_type == DEVICE_ALI)
 Line 2296: 	if (chip->device_type != DEVICE_ALI)
