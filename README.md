@@ -17,9 +17,9 @@ Action plan:
 
 To do:
 ```
-Line   69: enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_SIS, DEVICE_ALI, DEVICE_NFORCE };
-Line  409: 	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
-Line  925: 	case DEVICE_ALI:
+[DONE] Line   69: enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_SIS, DEVICE_ALI, DEVICE_NFORCE };
+[DONE] Line  409: 	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
+[DONE] Line  925: 	case DEVICE_ALI:
 Line 1598: 	case DEVICE_ALI:
 Line 2144: 		case DEVICE_ALI:
 Line 2161: 	if (chip->device_type != DEVICE_ALI) {
