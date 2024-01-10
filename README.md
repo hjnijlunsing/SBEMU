@@ -16,6 +16,7 @@ Action plan:
 - Check all DEVICE_SIS cases in intel8x0.c check if similar to SIS_7012 code and see how to implement this in SC_ICH.C
 
 To do:
+...
  Line   69: enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_SIS, DEVICE_ALI, DEVICE_NFORCE };
 	Line  409: 	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
 	Line  925: 	case DEVICE_ALI:
@@ -33,3 +34,4 @@ To do:
 	Line 2962: 	case DEVICE_ALI:
 	Line 2982: 		if (device_type == DEVICE_ALI)
 	Line 3007: 	chip->int_sta_reg = device_type == DEVICE_ALI ?
+...
