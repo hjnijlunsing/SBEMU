@@ -12,26 +12,26 @@ Disclaimer:
 Action plan:
 - Fork Repo (Done)
 - Change Readme (Done)
-- Try to compile (In progress)
+- Try to compile (Done) - Using WSL2
 - Check all DEVICE_SIS cases in intel8x0.c check if similar to SIS_7012 code and see how to implement this in SC_ICH.C
 
 To do:
 ```
- Line   69: enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_SIS, DEVICE_ALI, DEVICE_NFORCE };
-	Line  409: 	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
-	Line  925: 	case DEVICE_ALI:
-	Line 1598: 	case DEVICE_ALI:
-	Line 2144: 		case DEVICE_ALI:
-	Line 2161: 	if (chip->device_type != DEVICE_ALI) {
-	Line 2203: 	if (chip->device_type == DEVICE_ALI)
-	Line 2296: 	if (chip->device_type != DEVICE_ALI)
-	Line 2498: 	if (chip->device_type != DEVICE_ALI) {
-	Line 2676: 	if (chip->device_type != DEVICE_ALI)
-	Line 2708: 	if (chip->device_type == DEVICE_ALI) {
-	Line 2792: 	if (chip->device_type == DEVICE_ALI)
-	Line 2882: 		6, /* DEVICE_ALI */
-	Line 2941: 	if (device_type == DEVICE_ALI) {
-	Line 2962: 	case DEVICE_ALI:
-	Line 2982: 		if (device_type == DEVICE_ALI)
-	Line 3007: 	chip->int_sta_reg = device_type == DEVICE_ALI ?
+Line   69: enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_SIS, DEVICE_ALI, DEVICE_NFORCE };
+Line  409: 	{ PCI_VDEVICE(AL, 0x5455), DEVICE_ALI },   /* Ali5455 */
+Line  925: 	case DEVICE_ALI:
+Line 1598: 	case DEVICE_ALI:
+Line 2144: 		case DEVICE_ALI:
+Line 2161: 	if (chip->device_type != DEVICE_ALI) {
+Line 2203: 	if (chip->device_type == DEVICE_ALI)
+Line 2296: 	if (chip->device_type != DEVICE_ALI)
+Line 2498: 	if (chip->device_type != DEVICE_ALI) {
+Line 2676: 	if (chip->device_type != DEVICE_ALI)
+Line 2708: 	if (chip->device_type == DEVICE_ALI) {
+Line 2792: 	if (chip->device_type == DEVICE_ALI)
+Line 2882: 		6, /* DEVICE_ALI */
+Line 2941: 	if (device_type == DEVICE_ALI) {
+Line 2962: 	case DEVICE_ALI:
+Line 2982: 		if (device_type == DEVICE_ALI)
+Line 3007: 	chip->int_sta_reg = device_type == DEVICE_ALI ?
 ```
