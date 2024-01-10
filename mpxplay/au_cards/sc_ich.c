@@ -62,6 +62,7 @@
 #define ICH_PCM_20BIT      0x00400000 // 20-bit samples (ICH4)
 #define ICH_PCM_246_MASK  0x00300000 // 6 channels (not all chips)
 #define ICH_SIS_PCM_246_MASK  0x000000c0 // 6 channels (SIS7012)
+#define ICH_ALI_SC_PCM_246_MASK	(3<<8)
 
 #define ICH_GLOB_STAT_REG 0x30       // Global Status register (RO)
 #define ICH_GLOB_STAT_PCR 0x00000100 // Primary codec is ready for action (software must check these bits before starting the codec!)
@@ -111,7 +112,7 @@ typedef struct intel_card_s
  float ac97_clock_corrector;
 }intel_card_s;
 
-enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_NFORCE, DEVICE_SIS };
+enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_NFORCE, DEVICE_SIS, DEVICE_ALI };
 static char *ich_devnames[4]={"ICH","ICH4","NForce","SIS7012"};
 
 static void snd_intel_measure_ac97_clock(struct mpxplay_audioout_info_s *aui);
@@ -307,6 +308,8 @@ static void snd_intel_prepare_playback(struct intel_card_s *card,struct mpxplay_
  cmd=snd_intel_read_32(card,ICH_GLOB_CNT_REG);
  if (card->device_type == DEVICE_SIS) {
      funcbit_disable(cmd,(ICH_SIS_PCM_246_MASK | ICH_PCM_20BIT));
+ } else if (card->device_type == DEVICE_ALI) {
+     funcbit_disable(cmd,(ICH_ALI_SC_PCM_246_MASK | ICH_PCM_20BIT));
  } else {
      funcbit_disable(cmd,(ICH_PCM_246_MASK | ICH_PCM_20BIT));
      if(aui->bits_set>16){
@@ -402,7 +405,7 @@ static pci_device_s ich_devices[]={
  {"CK8S"   ,0x10de,0x00ea, DEVICE_NFORCE},
  {"AMD8111",0x1022,0x746d, DEVICE_INTEL},
  {"AMD768" ,0x1022,0x7445, DEVICE_INTEL},
- //{"ALI5455",0x10b9,0x5455, DEVICE_ALI}, // needs extra code
+ {"ALI5455",0x10b9,0x5455, DEVICE_ALI}, // needs extra code
  {NULL,0,0,0}
 };
 
