@@ -21,6 +21,9 @@
 // FreeBSD: https://cgit.freebsd.org/src/tree/sys/dev/sound/pci/ich.c
 // OSDev: https://wiki.osdev.org/AC97
 
+// 2024-10-01 Harm Jan Nijlunsing
+// ALI5455 support added using same references as above
+
 //#define MPXPLAY_USE_DEBUGF 1
 #define ICH_DEBUG_OUTPUT stdout
 
@@ -63,6 +66,18 @@
 #define ICH_PCM_246_MASK  0x00300000 // 6 channels (not all chips)
 #define ICH_SIS_PCM_246_MASK  0x000000c0 // 6 channels (SIS7012)
 #define ICH_ALI_SC_PCM_246_MASK	(3<<8)
+#define ICH_REG_ALI_INTERRUPTSR  0x18
+#define ICH_REG_ALI_SCR  0x00
+#define ALI_INT_GPIO		(1<<1)
+#define ICH_REG_ALI_RTSR  0x34
+#define ICH_ALI_SC_RESET	(1<<31)	/* master reset */
+#define ICH_REG_ALI_FIFOCR1  0x0c	/* FIFO Control Register 1  */
+#define ICH_REG_ALI_FIFOCR2  0x1c	/* FIFO Control Register 2  */
+#define ICH_REG_ALI_FIFOCR3  0x2c	/* FIFO Control Register 3  */
+#define ICH_REG_ALI_INTERFACECR  0x10
+#define ICH_ALI_IF_PI		(1<<19)
+#define ICH_ALI_IF_PO		(1<<1)
+#define ICH_REG_ALI_INTERRUPTCR 0x14	/* Interrupt control Register */
 
 #define ICH_GLOB_STAT_REG 0x30       // Global Status register (RO)
 #define ICH_GLOB_STAT_PCR 0x00000100 // Primary codec is ready for action (software must check these bits before starting the codec!)
@@ -113,7 +128,7 @@ typedef struct intel_card_s
 }intel_card_s;
 
 enum { DEVICE_INTEL, DEVICE_INTEL_ICH4, DEVICE_NFORCE, DEVICE_SIS, DEVICE_ALI };
-static char *ich_devnames[4]={"ICH","ICH4","NForce","SIS7012"};
+static char *ich_devnames[5]={"ICH","ICH4","NForce","SIS7012", "ALI5455"};
 
 static void snd_intel_measure_ac97_clock(struct mpxplay_audioout_info_s *aui);
 
@@ -211,6 +226,77 @@ static unsigned int snd_intel_buffer_init(struct intel_card_s *card,struct mpxpl
  #endif
  mpxplay_debugf(ICH_DEBUG_OUTPUT,"buffer init: pagetable:%8.8X pcmoutbuf:%8.8X size:%d",(unsigned long)card->virtualpagetable,(unsigned long)card->pcmout_buffer,card->pcmout_bufsize);
  return 1;
+}
+
+#include <time.h>
+#include <errno.h>    
+
+/* msleep(): Sleep for the requested number of milliseconds. */
+/*int msleep(long msec)
+{
+    struct timespec ts;
+    int res;
+
+    if (msec < 0)
+    {
+        errno = EINVAL;
+        return -1;
+    }
+
+    ts.tv_sec = msec / 1000;
+    ts.tv_nsec = (msec % 1000) * 1000000;
+
+    do {
+        res = nanosleep(&ts, &ts);
+    } while (res && errno == EINTR);
+
+    return res;
+}*/
+
+static void snd_ali_chip_init(struct intel_card_s *card)
+{
+ unsigned reg;
+ int i = 0;
+
+ reg=snd_intel_read_32(card,ICH_REG_ALI_SCR);
+ if ((reg & 2) == 0)	/* Cold required */
+  reg |= 2;
+ else
+  reg |= 1;	/* Warm */
+ reg &= ~0x80000000;	/* ACLink on */
+
+ snd_intel_write_32(card, ICH_REG_ALI_SCR, reg);
+
+ for (i = 0; i < 50; i++) {
+  if (! (snd_intel_read_32(card,ICH_REG_ALI_SCR & ALI_INT_GPIO)))
+   goto __ok;
+  time_t cur_time = time(NULL);
+  while ((difftime(time(NULL), cur_time)) < 10);
+ }
+ 
+ mpxplay_debugf(ICH_DEBUG_OUTPUT,"AC97 reset failed.");
+ goto __end;
+
+ __ok:
+ for (i = 0; i < 50; i++) {
+  reg=snd_intel_read_32(card,ICH_REG_ALI_RTSR);
+  if (reg & 0x80) /* primary codec */
+   break;
+  snd_intel_write_32(card, ICH_REG_ALI_RTSR, reg | 0x80); 
+  time_t cur_time = time(NULL);
+  while ((difftime(time(NULL), cur_time)) < 10);
+ }
+
+ snd_intel_write_32(card,ICH_REG_ALI_SCR, ICH_ALI_SC_RESET);
+ snd_intel_write_32(card,ICH_REG_ALI_FIFOCR1, 0x83838383);
+ snd_intel_write_32(card,ICH_REG_ALI_FIFOCR2, 0x83838383);
+ snd_intel_write_32(card,ICH_REG_ALI_FIFOCR3, 0x83838383);
+ 
+ snd_intel_write_32(card,ICH_REG_ALI_INTERFACECR, ICH_ALI_IF_PI|ICH_ALI_IF_PO);
+ snd_intel_write_32(card,ICH_REG_ALI_INTERRUPTCR, 0);
+ snd_intel_write_32(card,ICH_REG_ALI_INTERRUPTSR, 0);
+
+ __end:
 }
 
 static void snd_intel_chip_init(struct intel_card_s *card)
@@ -490,7 +576,11 @@ static int INTELICH_adetect(struct mpxplay_audioout_info_s *aui)
 
  if(!snd_intel_buffer_init(card,aui))
   goto err_adetect;
- snd_intel_chip_init(card);
+ if (card->pci_dev->device_type != DEVICE_ALI) {
+  snd_intel_chip_init(card);
+ } else {
+  snd_ali_chip_init(card);  
+ }
  snd_intel_ac97_init(card,aui->freq_set);
  return 1;
 
