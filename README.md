@@ -26,7 +26,7 @@ To do:
 [SKIP] Line 2203: 	if (chip->device_type == DEVICE_ALI)   /* Seems to be related to VRA, skipping for now */
 [SKIP] Line 2296: 	if (chip->device_type != DEVICE_ALI)   /* Seems necessary for non-ali devices to clear the cold reset bit for the mixer, skipping for now */
 [DONE] Line 2498: 	if (chip->device_type != DEVICE_ALI) {  /* Added special initialization code for ALI devices */
-Line 2676: 	if (chip->device_type != DEVICE_ALI)
+[SKIP] Line 2676: 	if (chip->device_type != DEVICE_ALI)   /* Seems that for Non-ALI cards you do not need to set the Bus Master Bit, only IOCE, in SBEMU code; it just restores. Shoud work */
 Line 2708: 	if (chip->device_type == DEVICE_ALI) {
 Line 2792: 	if (chip->device_type == DEVICE_ALI)
 Line 2882: 		6, /* DEVICE_ALI */
