@@ -13,7 +13,7 @@ Action plan:
 - Fork Repo (Done)
 - Change Readme (Done)
 - Try to compile (Done) - Using WSL2
-- Check all DEVICE_SIS cases in intel8x0.c check if similar to SIS_7012 code and see how to implement this in SC_ICH.C
+- Check all DEVICE_ALI cases in intel8x0.c check if similar to SIS_7012 code and see how to implement this in SC_ICH.C
 
 To do:
 ```
@@ -22,10 +22,10 @@ To do:
 [DONE] Line  925: 	case DEVICE_ALI:
 [SKIP] Line 1598: 	case DEVICE_ALI:  /* No Special code for the NForce PCM table seems to be in sc_ich.h; guess nothing is needed for Ali */
 [SKIP] Line 2144: 		case DEVICE_ALI: /* No Special code for the NForce SPDIF seems to be in sc_ich.h; guess nothing is needed for Ali */
-Line 2161: 	if (chip->device_type != DEVICE_ALI) {
-Line 2203: 	if (chip->device_type == DEVICE_ALI)
-Line 2296: 	if (chip->device_type != DEVICE_ALI)
-Line 2498: 	if (chip->device_type != DEVICE_ALI) {
+[SKIP] Line 2161: 	if (chip->device_type != DEVICE_ALI) { /* Seems to count the number of codecs used for the mixer, not sure if we need this */
+[SKIP] Line 2203: 	if (chip->device_type == DEVICE_ALI)   /* Seems to be related to VRA, skipping for now */
+[SKIP] Line 2296: 	if (chip->device_type != DEVICE_ALI)   /* Seems necessary for non-ali devices to clear the cold reset bit for the mixer, skipping for now */
+[DONE] Line 2498: 	if (chip->device_type != DEVICE_ALI) {  /* Added special initialization code for ALI devices */
 Line 2676: 	if (chip->device_type != DEVICE_ALI)
 Line 2708: 	if (chip->device_type == DEVICE_ALI) {
 Line 2792: 	if (chip->device_type == DEVICE_ALI)
